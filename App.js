@@ -17,7 +17,6 @@ export default createAppContainer(
       AuthLoading: AuthLoadingScreen,
       App: AppStack,
       Auth: AuthStack,
-      Other: OtherScreen
     },
     {
       initialRouteName: 'AuthLoading',

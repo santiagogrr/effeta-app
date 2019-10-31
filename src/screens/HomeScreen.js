@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Button, Label, Text, View } from 'react-native';
 import {AsyncStorage} from 'react-native';
-import t from 'tcomb-form-native';
+import LottieView from 'lottie-react-native';
 
 
 class HomeScreen extends Component {
@@ -30,6 +30,18 @@ class HomeScreen extends Component {
            <Button
            title="Log out"
            onPress={this.logout}
+           />
+           <LottieView 
+           source={require('../../assets/data.json')} autoPlay loop 
+           style={{width:120, height:220}}
+           />
+            <LottieView 
+           source={require('../../assets/party.json')} autoPlay loop 
+           style={{width:80, height:120}}
+           />
+            <LottieView 
+           source={require('../../assets/stars.json')} autoPlay loop 
+           style={{width:80, height:120}}
            />
       </View>
     )
