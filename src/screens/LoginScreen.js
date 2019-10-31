@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
-import { Button, Label, TextInput, View, StyleSheet, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { ScrollView, KeyboardAvoidingView, Button, Label, TextInput, View, StyleSheet, TouchableWithoutFeedback, Keyboard, Text } from 'react-native';
 import t from 'tcomb-form-native';
 //import AsyncStorage from '@react-native-community/async-storage';
 import {AsyncStorage} from 'react-native';
+import InputField from "../components/InputField";
 
 import auth from '../api/auth'
 
@@ -63,32 +64,64 @@ class LoginScreen extends Component {
 
   render() {
     return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.container}>
-            <TextInput
-            style={{height: 40}}
-            placeholder="Enter fucking mail!"
-            onChangeText={this.onChangeEmail}
-            value={this.state.email}
-            keyboardType='email-address'
-            autoCapitalize='none'
-            autoFocus
+    // <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    //     <View style={styles.container}>
+    //         <TextInput
+    //         style={{height: 40}}
+    //         placeholder="Enter fucking mail!"
+    //         onChangeText={this.onChangeEmail}
+    //         value={this.state.email}
+    //         keyboardType='email-address'
+    //         autoCapitalize='none'
+    //         autoFocus
+    //         />
+    //         <TextInput
+    //         style={{height: 40}}
+    //         placeholder="Enter fucking password!"
+    //         onChangeText={this.onChangePassword}
+    //         value={this.state.password}
+    //         autoCapitalize='none'
+    //         secureTextEntry={true}
+    //         />
+    //         <Button
+    //         title="Sign Up!"
+    //         onPress={this.submitForm}
+    //         disabled={this.state.isLoading}
+    //         />
+    //     </View>
+    // </TouchableWithoutFeedback>
+    <KeyboardAvoidingView style={styles.wrapper} behavior="padding">
+      <View style={styles.scrollViewWrapper}>
+        <ScrollView style={styles.avoidView}>
+          <Text style={styles.loginHeader}>Login</Text>
+          <InputField 
+              labelText="EMAIL ADDRESS" 
+              labelTextSize={14} 
+              labelColor={'white'} 
+              textColor={'white'} 
+              borderBottomColor={'white'} 
+              inputType="email"
+              keyboardType='email-address'   
+              onChangeText={this.onChangeEmail}
             />
-            <TextInput
-            style={{height: 40}}
-            placeholder="Enter fucking password!"
-            onChangeText={this.onChangePassword}
-            value={this.state.password}
-            autoCapitalize='none'
-            secureTextEntry={true}
+            <InputField 
+              labelText="PASSWORD" 
+              labelTextSize={14} 
+              labelColor={'white'} 
+              textColor={'white'} 
+              borderBottomColor={'white'} 
+              inputType="password"
+              onChangeText={this.onChangePassword}
+
             />
             <Button
             title="Sign Up!"
             onPress={this.submitForm}
             disabled={this.state.isLoading}
             />
-        </View>
-    </TouchableWithoutFeedback>
+        </ScrollView>
+      </View>
+   </KeyboardAvoidingView>
     )
   }
 }
@@ -100,6 +133,27 @@ const styles = StyleSheet.create({
       padding: 20,
       backgroundColor: '#ffffff',
     },
+    wrapper: {
+      display: "flex",
+      flex: 1,
+      backgroundColor: 'mediumseagreen'
+    },
+    scrollViewWrapper: {
+      marginTop: 70,
+      flex: 1
+    },
+    avoidView: {
+      paddingLeft: 30,
+      paddingRight: 30,
+      paddingTop: 20,
+      flex:1
+     },
+    loginHeader: {
+      fontSize: 28,
+      color: 'white',
+      fontWeight: "300",
+      marginBottom: 40
+    }
   });
 
 export default LoginScreen
