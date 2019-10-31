@@ -20,6 +20,7 @@ class LoginScreen extends Component {
       this.state = {
       email: '',
       password: '',
+      isLoading: false
     }
     //this.handleChange = this.handleChange.bind(this);
   }
@@ -41,13 +42,22 @@ class LoginScreen extends Component {
   }
 
   submitForm = async () => {
+    this.setState({
+        isLoading: true,
+      });
     const request = {"email": this.state.email, "password": this.state.password, "grant_type": "password"};
     try {
       const response = await auth.post('/oauth/token', request)
       await AsyncStorage.setItem('userToken', response.data.access_token)
+      this.setState({
+        isLoading: false,
+      });
       this.props.navigation.navigate('App');
     } catch (error) {
       alert('Usuario incorrecto')
+      this.setState({
+        isLoading: false,
+      });
     }
   }
 
@@ -60,16 +70,22 @@ class LoginScreen extends Component {
             placeholder="Enter fucking mail!"
             onChangeText={this.onChangeEmail}
             value={this.state.email}
+            keyboardType='email-address'
+            autoCapitalize='none'
+            autoFocus
             />
             <TextInput
             style={{height: 40}}
             placeholder="Enter fucking password!"
             onChangeText={this.onChangePassword}
             value={this.state.password}
+            autoCapitalize='none'
+            secureTextEntry={true}
             />
             <Button
             title="Sign Up!"
             onPress={this.submitForm}
+            disabled={this.state.isLoading}
             />
         </View>
     </TouchableWithoutFeedback>

@@ -13,9 +13,9 @@ class HomeScreen extends Component {
     }
   }
 
-  async logout() {
+  logout = async () => {
     try {
-      await AsyncStorage.removeItem('userToken');
+      await AsyncStorage.clear();
       this.props.navigation.navigate('Auth');
     }
     catch(exception) {

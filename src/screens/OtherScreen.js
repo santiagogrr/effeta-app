@@ -15,7 +15,7 @@ class OtherScreen extends Component {
   render() {
     return (
       <View>
-           <Text>Ahuevo</Text>
+           <Text>Ahuevo other</Text>
       </View>
     )
   }
