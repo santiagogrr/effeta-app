@@ -60,7 +60,7 @@ class InputField extends Component {
           ]}
           secureTextEntry={secureInput}
           value={inputValue}
-          onChangeText={this.onChangeText}
+          onChangeText={onChangeText}
         />
       </View>
     );

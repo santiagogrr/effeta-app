@@ -4,7 +4,8 @@ import t from 'tcomb-form-native';
 //import AsyncStorage from '@react-native-community/async-storage';
 import {AsyncStorage} from 'react-native';
 import InputField from "../components/InputField";
-
+import ArrowButton from "../components/ArrowButton";
+import Notification from "../components/Notification";
 import auth from '../api/auth'
 
 
@@ -21,7 +22,10 @@ class LoginScreen extends Component {
       this.state = {
       email: '',
       password: '',
-      isLoading: false
+      validEmail: false,
+      validPassword: false,
+      isLoading: false,
+      formValid: true
     }
     //this.handleChange = this.handleChange.bind(this);
   }
@@ -31,14 +35,47 @@ class LoginScreen extends Component {
   }
 
   onChangeEmail = (text) => {
+    const emailCheckRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const { validEmail } = this.state;
     this.setState({
       email: text,
     });
+
+    if (!validEmail) {
+      if (emailCheckRegex.test(text)) {
+        this.setState({ validEmail: true });
+      }
+    } else if (!emailCheckRegex.test(text)) {
+      this.setState({ validEmail: false });
+    }
   }
 
   onChangePassword = (text) => {
+    const { validPassword } = this.state;
     this.setState({
       password: text,
+    });
+
+    if (!validPassword) {
+      if (text.length > 4) {
+        this.setState({ validPassword: true });
+      }
+    } else if (text <= 4) {
+      this.setState({ validPassword: false });
+    }
+  }
+
+  toggleNextButtonState = () => {
+    const { validEmail, validPassword } = this.state;
+    if (validEmail && validPassword) {
+      return false;
+    }
+    return true;
+  }
+
+  handleCloseNotification = () =>{
+    this.setState({
+      formValid: true,
     });
   }
 
@@ -52,74 +89,66 @@ class LoginScreen extends Component {
       await AsyncStorage.setItem('userToken', response.data.access_token)
       this.setState({
         isLoading: false,
+        formValid: true
       });
       this.props.navigation.navigate('App');
     } catch (error) {
       alert('Usuario incorrecto')
       this.setState({
         isLoading: false,
+        formValid: false
       });
     }
   }
 
   render() {
+    const { formValid } = this.state;
+    const showNotification = formValid ? false:true
     return (
-    // <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-    //     <View style={styles.container}>
-    //         <TextInput
-    //         style={{height: 40}}
-    //         placeholder="Enter fucking mail!"
-    //         onChangeText={this.onChangeEmail}
-    //         value={this.state.email}
-    //         keyboardType='email-address'
-    //         autoCapitalize='none'
-    //         autoFocus
-    //         />
-    //         <TextInput
-    //         style={{height: 40}}
-    //         placeholder="Enter fucking password!"
-    //         onChangeText={this.onChangePassword}
-    //         value={this.state.password}
-    //         autoCapitalize='none'
-    //         secureTextEntry={true}
-    //         />
-    //         <Button
-    //         title="Sign Up!"
-    //         onPress={this.submitForm}
-    //         disabled={this.state.isLoading}
-    //         />
-    //     </View>
-    // </TouchableWithoutFeedback>
     <KeyboardAvoidingView style={styles.wrapper} behavior="padding">
       <View style={styles.scrollViewWrapper}>
-        <ScrollView style={styles.avoidView}>
-          <Text style={styles.loginHeader}>Login</Text>
-          <InputField 
-              labelText="EMAIL ADDRESS" 
-              labelTextSize={14} 
-              labelColor={'white'} 
-              textColor={'white'} 
-              borderBottomColor={'white'} 
-              inputType="email"
-              keyboardType='email-address'   
-              onChangeText={this.onChangeEmail}
-            />
+          <ScrollView style={styles.avoidView}>
+            <Text style={styles.loginHeader}>Login</Text>
             <InputField 
-              labelText="PASSWORD" 
-              labelTextSize={14} 
-              labelColor={'white'} 
-              textColor={'white'} 
-              borderBottomColor={'white'} 
-              inputType="password"
-              onChangeText={this.onChangePassword}
+                labelText="EMAIL ADDRESS" 
+                labelTextSize={14} 
+                labelColor={'white'} 
+                textColor={'white'} 
+                borderBottomColor={'white'} 
+                inputType="email"
+                keyboardType='email-address'   
+                onChangeText={this.onChangeEmail}
+              />
+              <InputField 
+                labelText="PASSWORD" 
+                labelTextSize={14} 
+                labelColor={'white'} 
+                textColor={'white'} 
+                borderBottomColor={'white'} 
+                inputType="password"
+                onChangeText={this.onChangePassword}
 
-            />
-            <Button
-            title="Sign Up!"
-            onPress={this.submitForm}
-            disabled={this.state.isLoading}
-            />
-        </ScrollView>
+              />
+              <Button
+              title="Sign Up!"
+              onPress={this.submitForm}
+              //disabled={this.state.isLoading}
+              color='white'
+              />
+          </ScrollView>
+        <ArrowButton
+         submitform={this.submitForm}
+         disabled={this.toggleNextButtonState()}
+         />
+         <View style={showNotification ? {marginTop: 10}: {}}>
+          <Notification
+          showNotification={showNotification}
+          handleCloseNotification={this.handleCloseNotification}
+          type="Error: "
+          firstLine='Wrong credentials. '
+          secondLine='Please try again'
+          />
+         </View>
       </View>
    </KeyboardAvoidingView>
     )
@@ -136,7 +165,7 @@ const styles = StyleSheet.create({
     wrapper: {
       display: "flex",
       flex: 1,
-      backgroundColor: 'mediumseagreen'
+      backgroundColor: 'darkcyan'
     },
     scrollViewWrapper: {
       marginTop: 70,
