@@ -4,6 +4,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { StyleSheet, Text, View } from 'react-native';
 import LoginScreen from './src/screens/LoginScreen';
+import SignUpScreen from './src/screens/SignUpScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import OtherScreen from './src/screens/OtherScreen';
 import AuthLoadingScreen from './src/screens/AuthLoadingScreen';
@@ -49,7 +50,7 @@ const AppStack = createBottomTabNavigator({
   })
 }
 );
-const AuthStack = createStackNavigator({ Login: LoginScreen });
+const AuthStack = createStackNavigator({ Login: LoginScreen, SignUp: SignUpScreen });
 
 export default createAppContainer(
   createSwitchNavigator(

@@ -7,23 +7,24 @@ import InputField from "../components/InputField";
 import ArrowButton from "../components/ArrowButton";
 import Notification from "../components/Notification";
 import auth from '../api/auth'
+import api from '../api/api'
 
-
-const Form = t.form.Form;
 
 const User = t.struct({
   email: t.String,
   password: t.String,
 });
 
-class LoginScreen extends Component {
+class SignUpScreen extends Component {
   constructor(props) {
     super(props);
       this.state = {
       email: '',
       password: '',
+      password_conf:'',
       validEmail: false,
       validPassword: false,
+      validPasswordConf: false,
       isLoading: false,
       formValid: true
     }
@@ -65,9 +66,24 @@ class LoginScreen extends Component {
     }
   }
 
+  onChangePasswordConfirmation = (text) => {
+    const { validPasswordConf } = this.state;
+    this.setState({
+      password_conf: text,
+    });
+
+    if (!validPasswordConf) {
+      if (text.length > 5) {
+        this.setState({ validPasswordConf: true });
+      }
+    } else if (text <= 5) {
+      this.setState({ validPasswordConf: false });
+    }
+  }
+
   toggleNextButtonState = () => {
-    const { validEmail, validPassword } = this.state;
-    if (validEmail && validPassword) {
+    const { validEmail, validPassword, validPasswordConf, password, password_conf } = this.state;
+    if (validEmail && validPassword && validPasswordConf && password === password_conf ) {
       return false;
     }
     return true;
@@ -80,11 +96,20 @@ class LoginScreen extends Component {
   }
 
   submitForm = async () => {
+    const { email, password, password_conf } = this.state;
     this.setState({
         isLoading: true,
       });
-    const request = {"email": this.state.email, "password": this.state.password, "grant_type": "password"};
+    
     try {
+      await auth.post('/users',{
+        user: {
+          email: email,
+          password: password,
+          password_confirmation: password_conf
+        }
+      })
+      const request = {"email": email, "password": password, "grant_type": "password"};
       const response = await auth.post('/oauth/token', request)
       await AsyncStorage.setItem('userToken', response.data.access_token)
       this.setState({
@@ -93,7 +118,7 @@ class LoginScreen extends Component {
       });
       this.props.navigation.navigate('App');
     } catch (error) {
-      alert('Usuario incorrecto')
+      alert("Error en registro")
       this.setState({
         isLoading: false,
         formValid: false
@@ -108,7 +133,7 @@ class LoginScreen extends Component {
     <KeyboardAvoidingView style={styles.wrapper} behavior="padding">
       <View style={styles.scrollViewWrapper}>
           <ScrollView style={styles.avoidView}>
-            <Text style={styles.loginHeader}>Login</Text>
+            <Text style={styles.loginHeader}>Sign Up</Text>
             <InputField 
                 labelText="EMAIL ADDRESS" 
                 labelTextSize={14} 
@@ -127,14 +152,22 @@ class LoginScreen extends Component {
                 borderBottomColor={'white'} 
                 inputType="password"
                 onChangeText={this.onChangePassword}
-
               />
-              <Button
+              <InputField 
+                labelText="CONFIRM PASSWORD" 
+                labelTextSize={14} 
+                labelColor={'white'} 
+                textColor={'white'} 
+                borderBottomColor={'white'} 
+                inputType="password"
+                onChangeText={this.onChangePasswordConfirmation}
+              />
+              {/* <Button
               title="Sign Up!"
-              onPress={() => this.props.navigation.navigate('SignUp')}
-              //disabled={this.state.isLoading}
+              onPress={this.submitForm}
+              disabled={this.state.isLoading}
               color='white'
-              />
+              /> */}
           </ScrollView>
         <ArrowButton
          submitform={this.submitForm}
@@ -145,7 +178,7 @@ class LoginScreen extends Component {
           showNotification={showNotification}
           handleCloseNotification={this.handleCloseNotification}
           type="Error: "
-          firstLine='Wrong credentials. '
+          firstLine='Wrong registration. '
           secondLine='Please try again'
           />
          </View>
@@ -185,4 +218,4 @@ const styles = StyleSheet.create({
     }
   });
 
-export default LoginScreen
+export default SignUpScreen
