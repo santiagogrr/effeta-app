@@ -8,14 +8,6 @@ import ArrowButton from "../components/ArrowButton";
 import Notification from "../components/Notification";
 import auth from '../api/auth'
 
-
-const Form = t.form.Form;
-
-const User = t.struct({
-  email: t.String,
-  password: t.String,
-});
-
 class LoginScreen extends Component {
   constructor(props) {
     super(props);
@@ -87,6 +79,16 @@ class LoginScreen extends Component {
     try {
       const response = await auth.post('/oauth/token', request)
       await AsyncStorage.setItem('userToken', response.data.access_token)
+      const user = await auth.get('/me', {
+          headers: {
+            Authorization: `Bearer ${response.data.access_token}`
+          } 
+        } 
+      )
+      console.log(user)
+      if(user.data)
+        await AsyncStorage.setItem('userId', user.data.id.toString())
+
       this.setState({
         isLoading: false,
         formValid: true
@@ -127,7 +129,6 @@ class LoginScreen extends Component {
                 borderBottomColor={'white'} 
                 inputType="password"
                 onChangeText={this.onChangePassword}
-
               />
               <Button
               title="Sign Up!"

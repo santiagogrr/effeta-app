@@ -1,0 +1,143 @@
+          <FlatList
+            data={rewards}
+            ItemSeparatorComponent={this.ListViewItemSeparator}
+            //enableEmptySections={true}
+            //keyExtractor={(reward, id) => id.toString()}
+            keyExtractor={reward => reward.id}
+            renderItem={({reward}) => (
+              <Text
+                //style={styles.rowViewContainer}
+                //onPress={() => alert(item.id)}
+                >
+                {reward}
+              </Text>
+            )}
+            refreshControl={
+          <RefreshControl
+            //refresh control used for the Pull to Refresh
+            //refreshing={this.state.refreshing}
+            onRefresh={this.onRefresh}
+          />
+
+
+import React, {Component} from 'react';
+import { View, Button, Text, FlatList, StyleSheet, TouchableOpacity} from 'react-native';
+
+const DATA = [
+  {
+    id: '1',
+    title: 'First Item',
+  },
+  {
+    id: '2',
+    title: 'Second Item',
+  },
+  // {
+  //   id: '3',
+  //   title: 'Third Item',
+  // },
+];
+
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: ''
+    };
+  }
+
+    // static navigationOptions = {
+    //   header : null
+    // }
+
+    getItem = (item) => {  
+      alert(item.id);  
+    }  
+
+    renderSeparator = () => {  
+      return (  
+          <View  
+              style={{  
+                  height: 20,  
+                  width: "100%",  
+                  //backgroundColor: "red",
+              }}  
+          />  
+      );  
+  };  
+
+    render() {
+      return (
+          <View style={styles.main}>
+            <View style={styles.firstrow}>
+              <Text style={styles.title}>FlatList</Text>
+            </View>
+            <View style={styles.secondrow}>
+              <FlatList
+                data={DATA}
+                // renderItem={({ item }) => <Item title={item.title} />}
+                ItemSeparatorComponent={this.renderSeparator}  
+                keyExtractor={item => item.id}
+                renderItem={({item}) => 
+                <View>
+                  <TouchableOpacity style={{borderWidth: 3, borderRadius: 10, padding: 10}} onPress={() => this.getItem(item)}>
+                    <Text style={styles.title}>Card</Text>
+                    <Text style={styles.item}>{item.title}</Text>
+                  </TouchableOpacity>
+                </View> }   
+              />
+            </View>   
+          </View>
+      );
+    }
+  }
+
+  const styles = StyleSheet.create({
+    main: {
+      flex: 1,
+    },
+    firstrow: {
+      height: '10%',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#98d2c1',
+      paddingTop: 40
+    },
+    secondrow: {
+      marginTop: 10,
+      height: '60%',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    thirdrow: {
+      height: '10%',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    title: {
+      fontSize: 24,
+      fontFamily: 'Hiragino Sans',
+      fontWeight: "bold",
+      justifyContent: 'center',
+    },
+    item: {  
+      padding: 15,  
+      fontSize: 18,
+      //borderWidth: 3,
+      elevation: 3,
+      alignSelf:'center',
+      borderRadius: 10,
+      height: 60,
+    },  
+    input: {
+      height: 40,
+      width: 150,
+      borderBottomWidth: 1,
+      fontSize: 18,
+      textAlign: 'center'
+    }
+
+  });
+  
+
+  export default App;
