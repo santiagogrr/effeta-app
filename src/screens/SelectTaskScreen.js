@@ -1,27 +1,22 @@
 import React, { Component } from 'react'
-import { Button, Text, View, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Button, Text, View, StyleSheet, FlatList } from 'react-native';
 import {AsyncStorage} from 'react-native';
-import LottieView from 'lottie-react-native';
 import api from '../api/api.js';
 import auth from '../api/auth';
-import InputField from "../components/InputField";
-import FloatingButton from "../components/FloatingButton";
-import Notification from "../components/Notification";
-import ListItem from "../components/ListItem";
 import { ScrollView } from 'react-native-gesture-handler';
+import ListItem from "../components/ListItem";
 
 
-class RewardScreen extends Component {
+class SelectTaskScreen extends Component {
   constructor(props) {
     super(props);
       this.state = {
-      rewards: [],
+      tasks: [],
       name: '',
       value: '',
       validName: false,
       validValue: false,
-      //user: [],
-      formValid: false,
+      formValid: false
     }
   }
 
@@ -64,42 +59,6 @@ class RewardScreen extends Component {
     return true;
   }
 
-
-  async componentDidMount(){
-    const { navigation } = this.props
-    this.willFocusListener = navigation.addListener(
-      'willFocus',
-      () => {
-        this.getData()
-      }
-    )
-  }
-
-  componentWillUnmount() {
-    this.willFocusListener.remove()
-    console.log('hola')
-  }
-
-  getData = async () =>{
-    try{
-      const userId = await AsyncStorage.getItem('userId')
-      const token = await AsyncStorage.getItem('userToken')
-      const rewards = await api.get(`users/${userId}/rewards`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          } 
-        } 
-      )
-      this.setState({
-        rewards: rewards.data,
-      });
-    }
-    catch(error) {
-      console.log(error)
-    }
-  }
-
-
   renderSeparator = () => {  
     return (  
         <View  
@@ -114,38 +73,48 @@ class RewardScreen extends Component {
     );  
 }; 
 
-  onRefresh = () => {
-    this.setState({ 
-      rewards: [],
-    });
-    //Call the Service to get the latest data
-    this.getData;
-  }
+async componentDidMount(){
+  const { navigation } = this.props
+  this.willFocusListener = navigation.addListener(
+    'willFocus',
+    () => {
+      this.getData()
+    }
+  )
+}
 
-  handleDelete = async (id) => {
-    try{
-      api.delete('rewards',id);
-      this.setState({ 
-        rewards: this.state.rewards.filter(item => item.id !== id),
-      });
-      alert('Delete Successful')
-    }
-    catch(error){
-      console.log(error)
-    }
+getData = async () =>{
+  try{
+    const token = await AsyncStorage.getItem('userToken')
+    const tasks = await api.get(`tasks`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        } 
+      } 
+    )
+    this.setState({
+      tasks: tasks.data,
+    });
   }
+  catch(error) {
+    console.log(error)
+  }
+}
+
+componentWillUnmount() {
+  this.willFocusListener.remove()
+  console.log('hola')
+}
+
 
   render() {
-    const { rewards } = this.state
-    // const rewardsList = rewards.map((reward, i) =>
-    //   <Text key={i}>{reward.name}</Text>
-    // );
+    const { tasks } = this.state
     return (
       <View style={styles.scrollViewWrapper}>
         <ScrollView style={styles.avoidView}>
-          <Text style={styles.header}>Rewards List</Text>
+          <Text style={styles.header}>Select Tasks</Text>
           <FlatList
-          data={rewards}
+          data={tasks}
           ItemSeparatorComponent={this.renderSeparator}  
           keyExtractor={item => item.id}
           renderItem={({item}) => 
@@ -155,19 +124,13 @@ class RewardScreen extends Component {
             </TouchableOpacity> */}
               <ListItem
               firstLine={item.name}
-              secondLine={'Puntos: '+item.value}
+              secondLine={item['task-type']}
               color= '#E8E8E8'
-              icon = 'close-circle'
-              iconColor = 'black'
-              handleDelete = {() => this.handleDelete(item.id)}
+              submitform = {() => this.props.navigation.navigate('AssignTask',{ task: item })}
               />
           </View> }
           /> 
         </ScrollView>
-        <FloatingButton
-          submitform={() => this.props.navigation.navigate('AddReward')}
-          //labelText="Log out" 
-          />
       </View>
     )
   }
@@ -180,7 +143,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'darkcyan'
   },
   scrollViewWrapper: {
-    marginTop: 20,
+    marginTop: 40,
     flex: 1
   },
   avoidView: {
@@ -193,13 +156,8 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: 'black',
     fontWeight: "300",
-    marginBottom: 20
-  },
-  item: {
-    padding: 10,
-    fontSize: 18,
-    //height: 44,
-  },
+    marginBottom: 40
+  }
 });
 
-export default RewardScreen;
+export default SelectTaskScreen;

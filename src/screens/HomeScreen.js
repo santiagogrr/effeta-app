@@ -8,6 +8,7 @@ import InputField from "../components/InputField";
 import TaskCard from "../components/TaskCard";
 import CategoryCard from "../components/CategoryCard";
 import Checkbox from "../components/Checkbox";
+import ModalView from "../components/ModalView";
 import { ScrollView } from 'react-native-gesture-handler';
 
 
@@ -15,7 +16,7 @@ class HomeScreen extends Component {
   constructor(props) {
     super(props);
       this.state = {
-      rewards: [],
+      tasks: [],
       name: '',
       value: '',
       user: [],

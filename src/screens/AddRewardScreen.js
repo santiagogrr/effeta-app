@@ -113,18 +113,15 @@ class AddRewardScreen extends Component {
             inputType="text"
             onChangeText={this.onChangeValue}
           />
-          {/* <Button
-          title="Add reward!"
-          onPress={this.submitForm}
-          //disabled={this.state.isLoading}
-          color='black'
-          />   */}
           <RoundButton
             //submitform={this.submitForm}
             labelText="Add Reward"
             color = 'black'
             disabled={this.toggleButtonState()}
             submitform={this.submitForm}
+            width= {140}
+            height= {60}
+            textColor= 'white'
             />
         </ScrollView>
       </View>
@@ -138,11 +135,6 @@ const styles = StyleSheet.create({
     marginTop: 50,
     padding: 20,
     backgroundColor: '#ffffff',
-  },
-  wrapper: {
-    display: "flex",
-    flex: 1,
-    backgroundColor: 'darkcyan'
   },
   scrollViewWrapper: {
     marginTop: 50,

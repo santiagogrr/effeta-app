@@ -21,10 +21,10 @@ class ListItem extends Component {
       >
       <View style={styles.textWrapper}>
           <Text style={[styles.text1]}>{firstLine}</Text>
-          <Text style={[styles.text2]}>Puntos: {secondLine}</Text>
+          <Text style={[styles.text2]}>{secondLine}</Text>
       </View>
       </TouchableOpacity>
-      <TouchableOpacity 
+      { icon ? (<TouchableOpacity 
       style={[styles.button2]}
       onPress = {handleDelete}
       //onPress={() => this.handleDelete(id)}
@@ -38,7 +38,7 @@ class ListItem extends Component {
         style={styles.icon}
         />
       </View>
-      </TouchableOpacity>
+      </TouchableOpacity>) : null}
     </View>
     )
   }
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     justifyContent: "center",
     borderRadius: 10,
-    width: 250,
+    flex: 7,
     height: 80,
     // flexWrap: 'wrap',
     // flexDirection: 'row',
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 10,
-    width: 40,
+    flex: 1,
     height: 50,
     padding: 5,
   },

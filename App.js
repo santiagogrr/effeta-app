@@ -8,6 +8,8 @@ import SignUpScreen from './src/screens/SignUpScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import RewardScreen from './src/screens/RewardScreen';
 import AddRewardScreen from './src/screens/AddRewardScreen';
+import SelectTaskScreen from './src/screens/SelectTaskScreen';
+import AssignTaskScreen from './src/screens/AssignTaskScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import OtherScreen from './src/screens/OtherScreen';
 import ParentalControlScreen from './src/screens/ParentalControlScreen';
@@ -19,7 +21,7 @@ import Ionicons from 'react-native-vector-icons/FontAwesome5';
 //   );
 
 const HomeStack = createStackNavigator({
-  Home: HomeScreen,
+  Home: HomeScreen
 });
 
 const OtherStack = createStackNavigator({
@@ -27,7 +29,7 @@ const OtherStack = createStackNavigator({
 });
 
 const ParentalControlStack = createStackNavigator({
-  ParentalControl: ParentalControlScreen,
+  ParentalControl: ParentalControlScreen, SelectTask: SelectTaskScreen, AssignTask: AssignTaskScreen
 });
 
 const RewardStack = createStackNavigator({

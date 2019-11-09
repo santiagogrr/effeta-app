@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from "react-native";
 
-class InputField extends Component {
+class PinInput extends Component {
   constructor(props) {
     super(props);
       this.state = {
@@ -41,17 +41,11 @@ class InputField extends Component {
     return (
         <View style={[customStyle, styles.wrapper]}>
         <Text style={[{ color, fontSize }, styles.label]}>{labelText}</Text>
-        {inputType === "password" ? (
-          <TouchableOpacity
-            style={styles.showButton}
-            onPress={this.toggleShowPassword}
-          >
-            <Text style={styles.showButtonText}>
-              {secureInput ? "Show" : "Hide"}
-            </Text>
-          </TouchableOpacity>
-        ) : null}
         <TextInput
+          maxLength={4}
+          keyboardType='number-pad'
+          placeholder='Enter here'
+          placeholderTextColor='#D3D3D3'
           autoCorrect={false}
           autoCapitalize='none'
           style={[
@@ -69,7 +63,7 @@ class InputField extends Component {
 const styles = StyleSheet.create({
   wrapper: {
     display: "flex",
-    marginBottom:40
+    marginBottom:35
   },
   label: { 
     fontWeight: "700", 
@@ -79,6 +73,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     paddingTop: 5,
     paddingBottom: 5,
+    fontSize: 22,
+    textAlign: 'center'
   },
   showButton: {
     position: "absolute",
@@ -89,4 +85,4 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   }
 });
-export default InputField;
+export default PinInput;

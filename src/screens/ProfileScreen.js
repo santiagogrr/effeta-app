@@ -66,19 +66,13 @@ class ProfileScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    justifyContent: 'center',
-    marginTop: 50,
-    padding: 20,
-    backgroundColor: '#ffffff',
-  },
   wrapper: {
     display: "flex",
     flex: 1,
     backgroundColor: 'darkcyan'
   },
   scrollViewWrapper: {
-    marginTop: 30,
+    marginTop: 20,
     flex: 1
   },
   avoidView: {

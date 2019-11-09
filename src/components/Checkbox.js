@@ -15,7 +15,7 @@ class Checkbox extends Component {
           color={color}
           name={ selected ? 'check-circle' : 'checkbox-blank-circle-outline'}
         />
-        <Text style={textStyle}> {text} </Text>
+        <Text style={styles.textStyle}> {text} </Text>
     </TouchableOpacity>
     )
   }
@@ -24,8 +24,12 @@ class Checkbox extends Component {
 const styles = StyleSheet.create({
   checkBox: {
       flexDirection: 'row',
-      alignItems: 'center'
-  }
+      alignItems: 'center',
+      paddingTop: 10
+  },
+  textStyle: {
+    fontSize: 18,
+}
 });
 
 export default Checkbox;
