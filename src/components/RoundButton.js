@@ -5,16 +5,19 @@ import { TouchableOpacity, StyleSheet, Text, View } from "react-native";
 class RoundButton extends Component {
 
   render() {
-    const { submitform, disabled, labelText, color, textColor, width, height, padding } = this.props;
+    const { submitform, disabled, labelText, color, textColor, width, height, padding, labelTextSize, buttonAlign } = this.props;
     const opacityStyle = disabled ? 0.4 : 0.9;
+    //const textSize = fontSize || 16;
+    const fontSize = labelTextSize || 16;
+    const alignItems = buttonAlign || 'center';
     return (
-    <View style={[{ paddingTop: padding}, styles.buttonWrapper]}>
+    <View style={[{ paddingTop: padding, alignItems}, styles.buttonWrapper]}>
       <TouchableOpacity 
       style={[{ backgroundColor: color, width: width, height: height , opacity: opacityStyle }, styles.button]}
       onPress={submitform}
       disabled={disabled}
       >
-        <Text style={[{ color: textColor}, styles.text]}>{labelText}</Text>
+        <Text style={[{ color: textColor, fontSize}, styles.text]}>{labelText}</Text>
         {/* <Icon
           name="angle-right"
           color="darkcyan"
@@ -29,7 +32,7 @@ class RoundButton extends Component {
 
 const styles = StyleSheet.create({
   buttonWrapper: {
-    alignItems: "center",
+    //alignItems: "center",
     //paddingTop: 0
   },
   button: {
@@ -46,7 +49,8 @@ const styles = StyleSheet.create({
   text: {
     //color: 'white',
     fontWeight: "700",
-    fontSize: 16
+    textAlign: 'center'
+    //fontSize: 16
   }
 });
 

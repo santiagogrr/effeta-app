@@ -7,6 +7,7 @@ import LoginScreen from './src/screens/LoginScreen';
 import SignUpScreen from './src/screens/SignUpScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import RewardScreen from './src/screens/RewardScreen';
+import TaskScreen from './src/screens/TaskScreen';
 import AddRewardScreen from './src/screens/AddRewardScreen';
 import SelectTaskScreen from './src/screens/SelectTaskScreen';
 import AssignTaskScreen from './src/screens/AssignTaskScreen';
@@ -21,7 +22,7 @@ import Ionicons from 'react-native-vector-icons/FontAwesome5';
 //   );
 
 const HomeStack = createStackNavigator({
-  Home: HomeScreen
+  Home: HomeScreen, Task: TaskScreen
 });
 
 const OtherStack = createStackNavigator({

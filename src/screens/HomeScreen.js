@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View, FlatList } from 'react-native';
 import {AsyncStorage} from 'react-native';
 import LottieView from 'lottie-react-native';
 import api from '../api/api.js';
@@ -19,8 +19,29 @@ class HomeScreen extends Component {
       tasks: [],
       name: '',
       value: '',
-      user: [],
-      taskDone: false
+      taskDone: false,
+      todayTasks: [],
+      selected: [],
+      categories: [
+        {
+          title: 'Kitchen',
+          type: 'kitchen',
+          icon: 'fridge',
+          checked: false,
+        },
+        {
+          title: 'Bed',
+          type: 'bed',
+          icon: 'bed-empty',
+          checked: false,
+        },
+        {
+          title: 'Clothing',
+          type: 'clothing',
+          icon: 'tshirt-crew',
+          checked: false,
+        },
+      ],
     }
   }
 
@@ -48,33 +69,94 @@ class HomeScreen extends Component {
     });
   }
 
-  async componentDidMount(){
-    try{
-      const token = await AsyncStorage.getItem('userToken')
-      const user = await auth.get('/me', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          } 
-        } 
-      )
-      console.log(user.data.id)
-      this.setState({
-        user: user.data
-      });
-      const rewards = await api.get(`users/${user.data['id']}`, {
-          include: 'rewards',
-          headers: {
-            Authorization: `Bearer ${token}`
-          } 
-        } 
-      )
-      this.setState({
-        rewards: rewards.data.rewards
-      });
-      //console.log(this.state.rewards)
+  handleIcon = (type) => {
+    if(type === 'kitchen') {
+      return 'fridge'
+    } else if(type === 'bed') {
+      return 'bed-empty'
+    } else if(type === 'clothing') {
+      return 'tshirt-crew'
+    } else {
+      return 'circle'
     }
-    catch(error){
+  }
 
+  isSelected = (category) => {
+    const { selected } = this.state;
+    if (selected.length > 0) {
+      for (let i = 0; i < selected.length; i++) {
+        if (selected[i].task['task-type'] === category.type) {
+          return true
+        }
+      }
+    } else {
+      return false
+    }
+  }
+
+  handlePress = (category) => {
+    const { categories } = this.state;
+    let newCategories = categories
+    for (let i = 0; i < newCategories.length; i++) {
+      if (category.type !== newCategories[i].type && newCategories[i].checked) {
+        newCategories[i].checked = !newCategories[i].checked
+      }
+      if (newCategories[i].type === category.type) {
+        newCategories[i].checked = !newCategories[i].checked
+      }
+    }
+    if(this.isSelected(category)){
+      this.setState({
+        selected: [],
+        categories: newCategories
+      });
+    } else {
+      const { todayTasks } = this.state;
+      const res = todayTasks.filter(userTask => userTask.task['task-type'] === category.type)
+      this.setState({
+        selected: res,
+        categories: newCategories
+      });
+    }
+  } 
+
+  async componentDidMount(){
+    const { navigation } = this.props
+    this.willFocusListener = navigation.addListener(
+      'willFocus',
+      () => {
+        this.getData()
+      }
+    )
+  }
+
+  componentWillUnmount() {
+    this.willFocusListener.remove()
+  }
+
+  getData = async () =>{
+    try{
+      const userId = await AsyncStorage.getItem('userId')
+      const token = await AsyncStorage.getItem('userToken')
+      const currentDay = new Intl.DateTimeFormat('en-US',{
+        weekday: 'short'
+      }).format(new Date()).toLowerCase()
+      const todayTasks = await api.get(`users/${userId}/user-tasks`, {
+          filter:{
+            today: currentDay
+          },
+          include: 'task',
+          headers: {
+            Authorization: `Bearer ${token}`
+          } 
+        } 
+      )
+      this.setState({
+        todayTasks: todayTasks.data,
+      });
+    }
+    catch(error) {
+      console.log(error)
     }
   }
   
@@ -97,15 +179,12 @@ class HomeScreen extends Component {
       })
     } catch (error) {
       alert("Error en registro")
-      // this.setState({
-      //   isLoading: false,
-      //   formValid: false
-      // });
     }
   }
 
 
   render() {
+    const { todayTasks, categories, selected } = this.state;
     return (
       <View style={styles.scrollViewWrapper}>
         <ScrollView style={styles.avoidView}>
@@ -114,59 +193,57 @@ class HomeScreen extends Component {
            style={{width:120, height:220}}
            /> */}
           <Text style={styles.header}>Hey Matt!</Text>
-          <Text style={styles.subheader}>Sunday, March 12</Text>
+          <Text style={styles.subheader}>{new Intl.DateTimeFormat('en-US',{
+            month: 'long',
+            day: '2-digit',
+            weekday: 'long'
+          }).format(new Date())}</Text>
           {/* <Checkbox
             selected={this.state.taskDone} 
             onPress={this.handleCheckBox}
             color = '#211f30'
           /> */}
           <Text style={styles.label}>Categories</Text>
-          <View style={styles.cardRow}>
-            <CategoryCard
-              labelText="Kitchen"
-              color= '#e0ebeb'
-              labelColor = 'black'
-              icon = 'fridge'
-              iconColor = 'black'
-            />
-            <CategoryCard
-              labelText="Bed"
-              color= 'black'
-              labelColor = 'white'
-              icon = 'bed-empty'
-              iconColor = 'white'
-            />
-            <CategoryCard
-              labelText="Clothing"
-              color= '#00802b'
-              labelColor = 'white'
-              icon = 'tshirt-crew'
-              iconColor = 'white'
-            />
+          <View style={styles.categoryRow}>
+          <FlatList
+            data={categories}
+            horizontal={true}
+            extraData = {selected}
+            keyExtractor={item => item.title}
+            renderItem={({item}) => 
+            <View>
+              <CategoryCard
+                labelText={item.title}
+                color = {item.checked ? 'darkcyan' :'#D3D3D3'}
+                labelColor = 'black'
+                fontWeight = {item.checked  ? '500' :'300'}
+                icon = {item.icon}
+                iconColor = {item.checked  ? 'white' :'black'}
+                submitform={() => this.handlePress(item)} 
+              />
+            </View> }
+            /> 
           </View>
           <Text style={[{ marginTop: 20 }, styles.label]}>Today</Text>
           <View style={styles.cardRow}>
-            <TaskCard
-            labelText="Lavar trastes"
-            color= '#e0e0eb'
-            labelColor = 'black'
-            icon = 'fridge'
-            iconColor = 'blue'
-            />
-            <TaskCard
-            labelText="Tender la cama"
-            color= '#e0e0eb'
-            labelColor = 'black'
-            icon = 'bed-empty'
-            iconColor = 'green'
-            />
-            <TaskCard
-            labelText="Lavarse los dientes"
-            color= '#e0e0eb'
-            labelColor = 'black'
-            icon = 'human'
-            iconColor = 'black'
-            />
+            <FlatList
+            data={(selected.length > 0 || categories.find(category=> category.checked === true)) ? selected : todayTasks}
+            keyExtractor={item => item.id}
+            renderItem={({item}) => 
+              <View>
+              <TaskCard
+                labelText={item.task.name}
+                color= '#8F2D56'
+                labelColor = 'black'
+                labelTextSize = {18}
+                isComplete={item.status === 'complete'}
+                points = {'Puntos: '+item.task.value}
+                icon = {this.handleIcon(item.task['task-type'])}
+                iconColor = 'white'
+                submitform={() => this.props.navigation.navigate('Task', { task: item.task, userTask: item })} 
+              />
+              </View> }
+            /> 
           </View>
         </ScrollView>
       </View>
@@ -180,7 +257,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
-  cardRow: {
+  categoryRow: {
     //marginTop: 30,
     flexWrap: 'wrap',
     flexDirection: 'row',

@@ -137,9 +137,6 @@ class RewardScreen extends Component {
 
   render() {
     const { rewards } = this.state
-    // const rewardsList = rewards.map((reward, i) =>
-    //   <Text key={i}>{reward.name}</Text>
-    // );
     return (
       <View style={styles.scrollViewWrapper}>
         <ScrollView style={styles.avoidView}>

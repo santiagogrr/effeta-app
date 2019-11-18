@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
-import { ScrollView, KeyboardAvoidingView, Button, Label, TextInput, View, StyleSheet, TouchableWithoutFeedback, Keyboard, Text } from 'react-native';
+import { ScrollView, KeyboardAvoidingView, Button, Label, TextInput, View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import t from 'tcomb-form-native';
-//import AsyncStorage from '@react-native-community/async-storage';
 import {AsyncStorage} from 'react-native';
 import InputField from "../components/InputField";
 import ArrowButton from "../components/ArrowButton";
 import Notification from "../components/Notification";
+import Icon from "react-native-vector-icons/MaterialIcons";
 import auth from '../api/auth'
 import api from '../api/api'
 
@@ -133,7 +133,7 @@ class SignUpScreen extends Component {
     <KeyboardAvoidingView style={styles.wrapper} behavior="padding">
       <View style={styles.scrollViewWrapper}>
           <ScrollView style={styles.avoidView}>
-            <Text style={styles.loginHeader}>Sign Up</Text>
+            <Text style={styles.header}>Sign Up</Text>
             <InputField 
                 labelText="EMAIL ADDRESS" 
                 labelTextSize={14} 
@@ -162,12 +162,16 @@ class SignUpScreen extends Component {
                 inputType="password"
                 onChangeText={this.onChangePasswordConfirmation}
               />
-              {/* <Button
-              title="Sign Up!"
-              onPress={this.submitForm}
-              disabled={this.state.isLoading}
-              color='white'
-              /> */}
+              <TouchableOpacity 
+              style={styles.backButton} 
+              onPress={() => this.props.navigation.goBack()}
+              >
+                <Icon
+                name='arrow-back'
+                size={28}
+                color='white'
+                />
+              </TouchableOpacity> 
           </ScrollView>
         <ArrowButton
          submitform={this.submitForm}
@@ -189,19 +193,13 @@ class SignUpScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-    container: {
-      justifyContent: 'center',
-      marginTop: 50,
-      padding: 20,
-      backgroundColor: '#ffffff',
-    },
     wrapper: {
       display: "flex",
       flex: 1,
       backgroundColor: 'darkcyan'
     },
     scrollViewWrapper: {
-      marginTop: 70,
+      marginTop: 90,
       flex: 1
     },
     avoidView: {
@@ -210,12 +208,19 @@ const styles = StyleSheet.create({
       paddingTop: 20,
       flex:1
      },
-    loginHeader: {
-      fontSize: 28,
+    header: {
+      fontSize: 32,
       color: 'white',
-      fontWeight: "300",
-      marginBottom: 40
-    }
+      fontWeight: "400",
+      marginBottom: 40,
+      paddingTop: 40
+    },
+    backButton: {
+      position: 'absolute',
+      //left: 5,
+      top: -15,
+      //zIndex: 999,
+    },
   });
 
 export default SignUpScreen

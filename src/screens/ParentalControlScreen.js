@@ -1,12 +1,13 @@
 import React, { Component } from 'react'
-import { Button, Label, Text, View, Modal, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { Button, Label, Text, View, Alert, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import FloatingButton from "../components/FloatingButton";
 import { ScrollView } from 'react-native-gesture-handler';
 import ListItem from "../components/ListItem";
 import ModalView from "../components/ModalView";
-import PinInput from "../components/PinInput";
 import api from '../api/api.js';
+import auth from '../api/auth.js';
 import {AsyncStorage} from 'react-native';
+import RoundButton from '../components/RoundButton';
 
 
 class ParentalControlScreen extends Component {
@@ -16,7 +17,10 @@ class ParentalControlScreen extends Component {
       modalVisible: true,
       tasks: [],
       pin: '',
-      validPin: false
+      validPin: false,
+      validNewPin: false,
+      changePinVisible: false,
+      newPin: ''
     }
   }
 
@@ -24,7 +28,20 @@ class ParentalControlScreen extends Component {
     this.setState({ 
       modalVisible: !this.state.modalVisible 
     });
- }
+    this.props.navigation.navigate('Home')
+  }
+
+  toggleNewPinModal = () => {
+      this.setState({ 
+        changePinVisible: !this.state.changePinVisible 
+      });
+  }
+
+  onUpdatePin = () => {
+    this.setState({ 
+      changePinVisible: !this.state.changePinVisible 
+    });
+  }
 
  onChangePin = (text) => {
   const { validPin } = this.state;
@@ -42,6 +59,22 @@ class ParentalControlScreen extends Component {
   }
 }
 
+onChangeNewPin = (text) => {
+  const { validNewPin, newPin } = this.state;
+  const re = /^[0-9\b\.]+$/;
+  this.setState({
+    newPin: text,
+  });
+
+  if (!validNewPin) {
+    if (re.test(text) && text.length == 4) {
+      this.setState({ validNewPin: true });
+    }
+  } else if (!re.test(text) || text.length != 4) {
+    this.setState({ validNewPin: false });
+  }
+}
+
 toggleButtonState = () => {
   const { validPin} = this.state;
   if (validPin) {
@@ -50,23 +83,20 @@ toggleButtonState = () => {
   return true;
 }
 
- renderSeparator = () => {  
-  return (  
-      <View  
-          style={{  
-              height: 1,  
-              width: "100%",  
-              backgroundColor: '#CED0CE',
-          }}  
-      />  
-  );  
-}; 
+toggleButtonState2 = () => {
+  const { validNewPin} = this.state;
+  if (validNewPin) {
+    return false;
+  }
+  return true;
+}
 
  getData = async () =>{
   try{
     const userId = await AsyncStorage.getItem('userId')
     const token = await AsyncStorage.getItem('userToken')
     const tasks = await api.get(`users/${userId}/user-tasks`, {
+        include: 'task',
         headers: {
           Authorization: `Bearer ${token}`
         },
@@ -75,6 +105,7 @@ toggleButtonState = () => {
     )
     this.setState({
       tasks: tasks.data,
+      modalVisible: true
     });
   }
   catch(error) {
@@ -97,36 +128,100 @@ componentWillUnmount() {
   console.log('hola')
 }
 
+handleDelete = async (id) => {
+  try{
+    api.delete('user-task',id);
+    this.setState({ 
+      tasks: this.state.tasks.filter(item => item.id !== id),
+    });
+    alert('Delete Successful')
+  }
+  catch(error){
+    console.log(error)
+  }
+}
+
+submitForm = async () => {
+  const { pin } = this.state;
+  try {
+    const token = await AsyncStorage.getItem('userToken')
+    const user = await auth.get('/me', {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    if (user.data.pin === pin) {
+      this.setState({ 
+        modalVisible: !this.state.modalVisible 
+      });
+    } else {
+      alert("Pin incorrecto")
+    }
+  } catch (error) {
+    alert("Error en registro")
+    console.log(error)
+  }
+}
+
+  submitNewPin = async () => {
+    const { newPin } = this.state;
+    try {
+      const token = await AsyncStorage.getItem('userToken')
+      const userId = await AsyncStorage.getItem('userId')
+      await api.update('user', {
+        id: userId,
+        pin: newPin,
+      },{
+        headers: {
+          Authorization: `Bearer ${token}`
+        } 
+      })
+      this.setState({ 
+        changePinVisible: !this.state.changePinVisible 
+      });
+      //alert("Pin actualizado")
+      setTimeout(() => {
+        alert("Pin actualizado")
+        }, 1000);
+    } catch (error) {
+      alert("Error en registro")
+      console.log(error)
+    }
+  }
+
   render() {
-    const { tasks, modalVisible} = this.state
+    const { tasks, modalVisible, changePinVisible} = this.state
     const opacityStyle = modalVisible ? 0.3 : 1;
     return (
       <View style={[{opacity: opacityStyle }, styles.scrollViewWrapper]}>
         <ScrollView style = {styles.avoidView}>
+          <RoundButton 
+              labelText="Change pin"
+              color = '#8F2D56'
+              submitform={this.onUpdatePin}
+              width= {65}
+              height= {50}
+              labelTextSize = {13}
+              textColor= 'white'
+              buttonAlign = 'flex-end'
+              padding = {-10}
+            />
            <Text style={styles.header}>Parental Control</Text>
-          {/* <Modal 
-          onRequestClose={() => { this.visibleModal(false); } } 
-          visible = {this.state.modalVisible}
-          animationType = {"fade"}
-          transparent = {true}
-          >
-              <View style={styles.modalView}>
-                  <Text style={styles.modalText}>Are you sure you want to randomize all?</Text>
-                <View>
-                  <TouchableOpacity style={styles.buttonContainer1}>
-                    <Text style={styles.button1}>Yes</Text>
-                  </TouchableOpacity>
-                <TouchableOpacity style={styles.buttonContainer2} onPress = {this.toggleModal}>
-                  <Text style={styles.button2}>No</Text>
-                </TouchableOpacity>
-                </View>
-              </View>
-          </Modal> */}
            <ModalView
-            visible = {this.state.modalVisible}
+            visible = {modalVisible}
             closeModal = {this.toggleModal}
             onChangeText = {this.onChangePin}
             disabledbutton = {this.toggleButtonState()}
+            submitform = {this.submitForm}
+            textModal = 'Enter Pin'
+          />
+          <ModalView
+            visible = {changePinVisible}
+            closeModal = {this.toggleNewPinModal}
+            onChangeText = {this.onChangeNewPin}
+            disabledbutton = {this.toggleButtonState2()}
+            submitform = {this.submitNewPin}
+            textModal = 'Enter New Pin'
           />
           <FlatList
           data={tasks}
@@ -135,12 +230,13 @@ componentWillUnmount() {
           renderItem={({item}) => 
           <View>
               <ListItem
-              firstLine={item.name}
-              secondLine={'Type: '+item['task-type']}
+              firstLine={item.task.name}
+              //secondLine={'Type: '+item.task['task-type']}
+              secondLine={item.freq}
               color= '#E8E8E8'
               icon = 'close-circle'
               iconColor = 'black'
-              //handleDelete = {() => this.handleDelete(item.id)}
+              handleDelete = {() => this.handleDelete(item.id)}
               />
           </View> }
           /> 
@@ -195,27 +291,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingTop: 20,
     //fontWeight: 'bold',
-  },
-  buttonContainer1:{
-    backgroundColor:'black',
-    margin: 7,
-   },
-   buttonContainer2:{
-    //backgroundColor:'#E0E0E0',
-    margin: 5,
-   },
-   button1:{
-    fontSize: 14,
-    fontWeight: 'bold',
-    padding: 10,
-    textAlign: 'center',
-    color: 'white',
-  },
-  button2:{
-    fontSize: 14,
-    fontWeight: 'bold',
-    padding: 10,
-    textAlign: 'center'
   },
 });
 export default ParentalControlScreen;

@@ -4,12 +4,6 @@ import { TouchableOpacity, StyleSheet, Text, View } from "react-native";
 
 class ListItem extends Component {
 
-  handleDelete = (id) => {
-
-    alert(id)
-
-  }
-
   render() {
     const { submitform, handleDelete, disabled, firstLine, secondLine, color, labelColor, icon, iconColor } = this.props;
     return (
@@ -20,14 +14,13 @@ class ListItem extends Component {
       disabled={disabled}
       >
       <View style={styles.textWrapper}>
-          <Text style={[styles.text1]}>{firstLine}</Text>
-          <Text style={[styles.text2]}>{secondLine}</Text>
+        <Text style={[styles.text1]}>{firstLine}</Text>
+        <Text style={[styles.text2]}>{secondLine.replace(/,/g, ' ')}</Text>
       </View>
       </TouchableOpacity>
       { icon ? (<TouchableOpacity 
       style={[styles.button2]}
       onPress = {handleDelete}
-      //onPress={() => this.handleDelete(id)}
       disabled={disabled}
       >
       <View style={styles.iconWrapper}>
@@ -46,7 +39,6 @@ class ListItem extends Component {
 
 const styles = StyleSheet.create({
   buttonWrapper: {
-    //alignItems: "flex-start",
     padding: 8,
     flex: 1,
     flexDirection: 'row',

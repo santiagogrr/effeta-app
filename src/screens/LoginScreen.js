@@ -5,6 +5,7 @@ import t from 'tcomb-form-native';
 import {AsyncStorage} from 'react-native';
 import InputField from "../components/InputField";
 import ArrowButton from "../components/ArrowButton";
+import RoundButton from "../components/RoundButton";
 import Notification from "../components/Notification";
 import auth from '../api/auth'
 
@@ -130,11 +131,14 @@ class LoginScreen extends Component {
                 inputType="password"
                 onChangeText={this.onChangePassword}
               />
-              <Button
-              title="Sign Up!"
-              onPress={() => this.props.navigation.navigate('SignUp')}
-              //disabled={this.state.isLoading}
-              color='white'
+              <Text style={styles.subtext}>Don't have an account?</Text>
+              <RoundButton
+              labelText="Sign Up"
+              color = 'black'
+              submitform={() => this.props.navigation.navigate('SignUp')}
+              width= {130}
+              height= {55}
+              textColor= 'white'
               />
           </ScrollView>
         <ArrowButton
@@ -169,7 +173,7 @@ const styles = StyleSheet.create({
       backgroundColor: 'darkcyan'
     },
     scrollViewWrapper: {
-      marginTop: 70,
+      marginTop: 85,
       flex: 1
     },
     avoidView: {
@@ -179,11 +183,18 @@ const styles = StyleSheet.create({
       flex:1
      },
     loginHeader: {
-      fontSize: 28,
+      fontSize: 32,
       color: 'white',
-      fontWeight: "300",
+      fontWeight: "400",
       marginBottom: 40
-    }
+    },
+    subtext: {
+      fontSize: 14,
+      color: 'white',
+      fontWeight: "500",
+      alignSelf: 'center',
+      marginBottom: 10
+    },
   });
 
 export default LoginScreen

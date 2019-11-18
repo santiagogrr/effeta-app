@@ -6,7 +6,7 @@ class ArrowButton extends Component {
 
   render() {
     const { submitform, disabled } = this.props;
-    const opacityStyle = disabled ? 0.2 : 0.6;
+    const opacityStyle = disabled ? 0.2 : 0.8;
     return (
     <View style={styles.buttonWrapper}>
       <TouchableOpacity 

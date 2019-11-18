@@ -7,7 +7,7 @@ import RoundButton from "../components/RoundButton";
 class ModalView extends Component {
 
   render() {
-    const { closeModal, disabledbutton, labelText, color, visible, onChangeText } = this.props;
+    const { closeModal, disabledbutton, labelText, color, visible, onChangeText, submitform, textModal } = this.props;
     return (
     <View style={styles.avoidView}>
       <Modal
@@ -28,7 +28,7 @@ class ModalView extends Component {
           color='white'
           />
         </TouchableOpacity> 
-          <Text style={styles.modalText}>Enter PIN</Text>
+          <Text style={styles.modalText}>{textModal}</Text>
           <Text style={styles.modalSubtext}>4 digits</Text>
           <View>
             <PinInput
@@ -47,7 +47,7 @@ class ModalView extends Component {
             width= {110}
             height= {60}
             textColor= 'black'
-            //submitform={this.submitForm}
+            submitform={submitform}
             />
           </View>
         </View>

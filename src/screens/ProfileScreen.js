@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     flex:1
    },
   header: {
-    fontSize: 28,
+    fontSize: 30,
     color: 'black',
     fontWeight: "300",
     marginBottom: 40

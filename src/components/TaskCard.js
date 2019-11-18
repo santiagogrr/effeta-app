@@ -1,68 +1,85 @@
 import React, { Component } from "react";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { TouchableOpacity, StyleSheet, Text, View } from "react-native";
+import { TextInput } from "react-native-gesture-handler";
 
 class TaskCard extends Component {
 
   render() {
-    const { submitform, disabled, labelText, color, labelColor, icon, iconColor } = this.props;
-    const opacityStyle = disabled ? 0.4 : 0.8;
+    const { isComplete, submitform, disabled, labelText, color, labelColor, icon, iconColor, labelTextSize, points} = this.props;
+    const fontSize = labelTextSize || 16;
     return (
-    <View style={styles.buttonWrapper}>
-      <TouchableOpacity 
-      style={[{ backgroundColor: color, opacity: opacityStyle }, styles.button]}
-      onPress={submitform}
-      disabled={disabled}
-      >
-        <View style={styles.iconWrapper}>
+    <TouchableOpacity style={styles.buttonWrapper} onPress={submitform}
+    disabled={disabled}>
+      <View style={[{ backgroundColor: color }, styles.iconButton]}>
+        <View>
           <Icon
           name={icon}
           color= {iconColor}
-          size={28}
+          size={30}
           style={styles.icon}
           />
-        </View >
-        <View style={styles.textWrapper}>
-          <Text style={[{ color: labelColor}, styles.text]}>{labelText}</Text>
         </View>
-      </TouchableOpacity>
-    </View>
+      </View>
+      <View style={styles.button}>
+        <View style={styles.TaskText}>
+          <Text style={[{ color: labelColor, fontSize}, styles.text]}>{labelText}</Text>
+          {points ? (<Text style={[styles.subtext]}>{points}</Text>) : null}
+        </View>
+          {isComplete ? (<Icon
+          name='check-circle'
+          color= {'darkcyan'}
+          size={34}
+          style={styles.status}
+          />) : null}
+      </View>
+    </TouchableOpacity>
     )
   }
 }
 
 const styles = StyleSheet.create({
   buttonWrapper: {
-    //alignItems: "flex-start",
-    padding: 11
-  },
-  iconWrapper: {
-    alignItems: "flex-end",
-    paddingTop: 10,
-    paddingRight: 10
-  },
-  textWrapper: {
     alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 10
+    paddingVertical: 10,
+    flex: 1,
+    flexDirection: 'row',
+    //flexWrap: 'wrap',
   },
   button: {
-    // alignItems: "center",
-    // justifyContent: "center",
-    borderRadius: 20,
-    width: 135,
-    height: 100,
-    //borderWidth: 1,
+    borderRadius: 5,
+    height: 65,
+    flex: 7,
+    flexDirection: 'row',
+    backgroundColor: '#E8E8E8'
   },
-  icon: {
-    marginRight: 0,
-    marginTop: 0
+  TaskText: {
+    flex: 8,
+    paddingLeft: 5,
+    alignItems: 'center',
+    justifyContent: "center",
+  },
+  status: {
+    flex: 2,
+    alignSelf: 'center',
+  },
+  iconButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    alignSelf: 'flex-end',
+    borderRadius: 5,
+    flex: 1,
+    height: 65,
+    padding: 8,
   },
   text: {
-    //color: 'blue',
     fontWeight: "700",
-    fontSize: 16
-  }
+  },
+  subtext: {
+    fontWeight: "500",
+    color: '#787878',
+    fontSize: 14
+  },
 });
 
 export default TaskCard;

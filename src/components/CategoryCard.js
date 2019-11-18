@@ -5,7 +5,7 @@ import { TouchableOpacity, StyleSheet, Text, View } from "react-native";
 class CategoryCard extends Component {
 
   render() {
-    const { submitform, disabled, labelText, color, labelColor, icon, iconColor } = this.props;
+    const { submitform, disabled, labelText, color, labelColor, icon, iconColor, fontWeight } = this.props;
     return (
     <View style={styles.buttonWrapper}>
       <TouchableOpacity 
@@ -17,14 +17,15 @@ class CategoryCard extends Component {
           <Icon
           name={icon}
           color= {iconColor}
-          size={20}
+          size={26}
           style={styles.icon}
           />
         </View>
-        <View style={styles.textWrapper}>
+        {/* <View style={styles.textWrapper}>
           <Text style={[{ color: labelColor}, styles.text]}>{labelText}</Text>
-        </View>
+        </View> */}
       </TouchableOpacity>
+      <Text style ={[{ color: labelColor, fontWeight: fontWeight}, styles.subtext]}>{labelText}</Text>
     </View>
     )
   }
@@ -34,8 +35,8 @@ const styles = StyleSheet.create({
   buttonWrapper: {
     //alignItems: "flex-start",
     padding: 8,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    // flexDirection: 'row',
+    // flexWrap: 'wrap',
     alignItems: 'flex-start',
   },
   iconWrapper: {
@@ -52,9 +53,9 @@ const styles = StyleSheet.create({
   button: {
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 20,
-    width: 120,
-    height: 50,
+    borderRadius: 30,
+    width: 62,
+    height: 62,
     flexWrap: 'wrap',
     flexDirection: 'row',
     padding: 5
@@ -64,7 +65,13 @@ const styles = StyleSheet.create({
     //color: 'blue',
     fontWeight: "400",
     fontSize: 15
-  }
+  },
+  subtext: {
+    fontSize: 13,
+    paddingTop: 10,
+    //fontWeight: "300",
+    alignSelf: 'center',
+  },
 });
 
 export default CategoryCard;
