@@ -16,11 +16,14 @@ class ParentalControlScreen extends Component {
       this.state = {
       modalVisible: true,
       tasks: [],
+      rewards: [],
       pin: '',
       validPin: false,
       validNewPin: false,
       changePinVisible: false,
-      newPin: ''
+      newPin: '',
+      tasksActive: true,
+      rewardsActive: false,
     }
   }
 
@@ -35,6 +38,13 @@ class ParentalControlScreen extends Component {
       this.setState({ 
         changePinVisible: !this.state.changePinVisible 
       });
+  }
+
+  toggleTab = () => {
+    this.setState({ 
+      tasksActive: !this.state.tasksActive,
+      rewardsActive: !this.state.rewardsActive 
+    });
   }
 
   onUpdatePin = () => {
@@ -100,11 +110,17 @@ toggleButtonState2 = () => {
         headers: {
           Authorization: `Bearer ${token}`
         },
-        //includes:  tasks
       } 
     )
+    const rewards = await api.get(`users/${userId}/rewards`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+    } 
+  )
     this.setState({
       tasks: tasks.data,
+      rewards: rewards.data,
       modalVisible: true
     });
   }
@@ -125,14 +141,13 @@ async componentDidMount(){
 
 componentWillUnmount() {
   this.willFocusListener.remove()
-  console.log('hola')
 }
 
-handleDelete = async (id) => {
+handleDelete = async (model,id,target) => {
   try{
-    api.delete('user-task',id);
+    api.delete(model,id);
     this.setState({ 
-      tasks: this.state.tasks.filter(item => item.id !== id),
+      [target]: this.state[target].filter(item => item.id !== id),
     });
     alert('Delete Successful')
   }
@@ -190,7 +205,7 @@ submitForm = async () => {
   }
 
   render() {
-    const { tasks, modalVisible, changePinVisible} = this.state
+    const { tasks, rewards, modalVisible, changePinVisible, tasksActive, rewardsActive} = this.state
     const opacityStyle = modalVisible ? 0.3 : 1;
     return (
       <View style={[{opacity: opacityStyle }, styles.scrollViewWrapper]}>
@@ -223,23 +238,49 @@ submitForm = async () => {
             submitform = {this.submitNewPin}
             textModal = 'Enter New Pin'
           />
+          <View style={styles.tabRow}>
+            <TouchableOpacity style={tasksActive ? styles.tabActive:styles.tab } onPress={this.toggleTab} disabled={tasksActive} >
+              <Text style={tasksActive ? styles.subheaderActive:styles.subheader}>Tasks</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={rewardsActive ? styles.tabActive:styles.tab } onPress={this.toggleTab} disabled={rewardsActive}>
+              <Text style={rewardsActive ? styles.subheaderActive:styles.subheader}>Rewards</Text>
+            </TouchableOpacity>
+          </View>
+          {tasksActive ? 
           <FlatList
-          data={tasks}
-          ItemSeparatorComponent={this.renderSeparator}  
+            data={tasks}
+            keyExtractor={item => item.id}
+            renderItem={({item}) => 
+            <View>
+                <ListItem
+                firstLine={item.task.name}
+                //secondLine={'Type: '+item.task['task-type']}
+                submitform = {() => this.props.navigation.navigate('EditTask',{id: item.id})}
+                secondLine={item.freq.replace(/,/g, ' ')}
+                color= '#E8E8E8'
+                icon = 'close-circle'
+                iconColor = 'black'
+                handleDelete = {() => this.handleDelete('user-task',item.id,'tasks')}
+                />
+            </View> }
+            /> 
+          :<FlatList
+          data={rewards}
           keyExtractor={item => item.id}
           renderItem={({item}) => 
           <View>
               <ListItem
-              firstLine={item.task.name}
+              firstLine={item.name}
               //secondLine={'Type: '+item.task['task-type']}
-              secondLine={item.freq}
+              submitform = {() => this.props.navigation.navigate('EditReward',{reward: item})}
+              secondLine={item.value}
               color= '#E8E8E8'
               icon = 'close-circle'
               iconColor = 'black'
-              handleDelete = {() => this.handleDelete(item.id)}
+              handleDelete = {() => this.handleDelete('reward',item.id,'rewards')}
               />
           </View> }
-          /> 
+          />  }
           </ScrollView>
           <FloatingButton
           submitform={() => this.props.navigation.navigate('SelectTask')}
@@ -270,7 +311,19 @@ const styles = StyleSheet.create({
     fontSize: 30,
     color: 'black',
     fontWeight: "300",
-    marginBottom: 5
+    //marginBottom: 5
+  },
+  subheader: {
+    fontSize: 18,
+    color: '#808080',
+    fontWeight: "300",
+    //marginBottom: 20
+  },
+  subheaderActive: {
+    fontSize: 18,
+    color: 'black',
+    fontWeight: "500",
+    //marginBottom: 20
   },
   item: {
     padding: 10,
@@ -291,6 +344,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingTop: 20,
     //fontWeight: 'bold',
+  },
+  tabRow: {
+    flexWrap: 'wrap',
+    flexDirection: 'row',
+    marginBottom: 20
+  },
+  tab: {
+    paddingHorizontal: 30,
+    paddingVertical: 10,
+  },
+  tabActive: {
+    paddingHorizontal: 30,
+    paddingVertical: 10,
+    fontWeight: "500",
+    borderBottomWidth: 1,
   },
 });
 export default ParentalControlScreen;

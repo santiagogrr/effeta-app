@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Text, View, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Button, Text, View, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
 import {AsyncStorage} from 'react-native';
 import LottieView from 'lottie-react-native';
 import api from '../api/api.js';
@@ -22,6 +22,7 @@ class RewardScreen extends Component {
       validValue: false,
       //user: [],
       formValid: false,
+      isRedeemed: false,
     }
   }
 
@@ -91,28 +92,13 @@ class RewardScreen extends Component {
         } 
       )
       this.setState({
-        rewards: rewards.data,
+        rewards: rewards.data.filter(item => item.status !== 'redeemed'),
       });
     }
     catch(error) {
       console.log(error)
     }
   }
-
-
-  renderSeparator = () => {  
-    return (  
-        <View  
-            style={{  
-                height: 1,  
-                width: "100%",  
-                backgroundColor: '#CED0CE',
-                //borderTopWidth: 1
-                //backgroundColor: "red",
-            }}  
-        />  
-    );  
-}; 
 
   onRefresh = () => {
     this.setState({ 
@@ -135,24 +121,77 @@ class RewardScreen extends Component {
     }
   }
 
+  handleReward = (item) => {
+    Alert.alert(item.name,'Wanna redeem '+item.value+' points for this reward?',
+    [
+      {text: 'OK', onPress: () => this.confirmReward(item)},
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+    ],)
+  }
+
+  confirmReward = async (reward) => {
+    try {
+      const { userTask, task, rewards } = this.state;
+      const token = await AsyncStorage.getItem('userToken')
+      const user = await auth.get('/me', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      if(user.data.points > reward.value){
+        await api.update('reward',{
+          id: reward.id,
+          status: 'redeemed',
+        },{
+          headers: {
+            Authorization: `Bearer ${token}`
+          } 
+        })
+        this.setState({
+          isRedeemed: true,
+          rewards: rewards.filter((item) => item.id !== reward.id),
+        })
+        this.props.navigation.navigate('Home')
+      } else {
+        alert("Puntos insuficientes")
+      }
+      
+    } catch (error) {
+      alert("Error")
+    }
+  }
+
+  toggleLottie = () => {
+    this.setState({ 
+      isRedeemed: false,
+    });
+  }
+
   render() {
-    const { rewards } = this.state
+    const { rewards, isRedeemed } = this.state
     return (
       <View style={styles.scrollViewWrapper}>
         <ScrollView style={styles.avoidView}>
           <Text style={styles.header}>Rewards List</Text>
+          {isRedeemed ? (<LottieView 
+              source={require('../../assets/exploding-confetti.json')} autoPlay loop={false}
+              style={styles.lottieView}
+              onAnimationFinish = {this.toggleLottie}
+              />) : null}
           <FlatList
           data={rewards}
           ItemSeparatorComponent={this.renderSeparator}  
           keyExtractor={item => item.id}
           renderItem={({item}) => 
           <View>
-            {/* <TouchableOpacity style={styles.button}>
-              <Text style={styles.item}>{item.name}</Text>
-            </TouchableOpacity> */}
               <ListItem
               firstLine={item.name}
               secondLine={'Puntos: '+item.value}
+              submitform = {() => this.handleReward(item)}
               color= '#E8E8E8'
               icon = 'close-circle'
               iconColor = 'black'
@@ -196,6 +235,15 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 18,
     //height: 44,
+  },
+  lottieView: {
+    height: '100%',
+    width: '100%',
+    position: 'absolute',
+    //top: 10,
+    alignSelf: 'center',
+    //right: 5,
+    zIndex: 1
   },
 });
 

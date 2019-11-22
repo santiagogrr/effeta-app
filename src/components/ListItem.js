@@ -15,7 +15,7 @@ class ListItem extends Component {
       >
       <View style={styles.textWrapper}>
         <Text style={[styles.text1]}>{firstLine}</Text>
-        <Text style={[styles.text2]}>{secondLine.replace(/,/g, ' ')}</Text>
+        <Text style={[styles.text2]}>{secondLine}</Text>
       </View>
       </TouchableOpacity>
       { icon ? (<TouchableOpacity 

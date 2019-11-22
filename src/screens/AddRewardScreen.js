@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Text, View, StyleSheet } from 'react-native';
+import { Button, Text, View, StyleSheet, Alert } from 'react-native';
 import {AsyncStorage} from 'react-native';
 import LottieView from 'lottie-react-native';
 import api from '../api/api.js';

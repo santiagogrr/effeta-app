@@ -11,6 +11,10 @@ import TaskScreen from './src/screens/TaskScreen';
 import AddRewardScreen from './src/screens/AddRewardScreen';
 import SelectTaskScreen from './src/screens/SelectTaskScreen';
 import AssignTaskScreen from './src/screens/AssignTaskScreen';
+import EditTaskScreen from './src/screens/EditTaskScreen';
+import ConfirmTasksScreen from './src/screens/ConfirmTasksScreen';
+import ConfirmRewardsScreen from './src/screens/ConfirmRewardsScreen';
+import EditRewardScreen from './src/screens/EditRewardScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import OtherScreen from './src/screens/OtherScreen';
 import ParentalControlScreen from './src/screens/ParentalControlScreen';
@@ -22,7 +26,7 @@ import Ionicons from 'react-native-vector-icons/FontAwesome5';
 //   );
 
 const HomeStack = createStackNavigator({
-  Home: HomeScreen, Task: TaskScreen
+  Home: HomeScreen, Task: TaskScreen, ConfirmTasks: ConfirmTasksScreen, ConfirmRewards: ConfirmRewardsScreen
 });
 
 const OtherStack = createStackNavigator({
@@ -30,7 +34,7 @@ const OtherStack = createStackNavigator({
 });
 
 const ParentalControlStack = createStackNavigator({
-  ParentalControl: ParentalControlScreen, SelectTask: SelectTaskScreen, AssignTask: AssignTaskScreen
+  ParentalControl: ParentalControlScreen, SelectTask: SelectTaskScreen, AssignTask: AssignTaskScreen, EditTask: EditTaskScreen, EditReward: EditRewardScreen
 });
 
 const RewardStack = createStackNavigator({

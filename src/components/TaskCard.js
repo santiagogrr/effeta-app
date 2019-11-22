@@ -6,10 +6,12 @@ import { TextInput } from "react-native-gesture-handler";
 class TaskCard extends Component {
 
   render() {
-    const { isComplete, submitform, disabled, labelText, color, labelColor, icon, iconColor, labelTextSize, points} = this.props;
+    const { statusIcon, submitform, disabled, labelText, color, labelColor, icon, iconColor, labelTextSize, points} = this.props;
     const fontSize = labelTextSize || 16;
+    const opacityStyle = disabled ? 0.4 : 1;
     return (
-    <TouchableOpacity style={styles.buttonWrapper} onPress={submitform}
+    <TouchableOpacity style={[{opacity: opacityStyle }, styles.buttonWrapper]}
+    onPress={submitform}
     disabled={disabled}>
       <View style={[{ backgroundColor: color }, styles.iconButton]}>
         <View>
@@ -26,8 +28,8 @@ class TaskCard extends Component {
           <Text style={[{ color: labelColor, fontSize}, styles.text]}>{labelText}</Text>
           {points ? (<Text style={[styles.subtext]}>{points}</Text>) : null}
         </View>
-          {isComplete ? (<Icon
-          name='check-circle'
+          {statusIcon !== null ? (<Icon
+          name={statusIcon}
           color= {'darkcyan'}
           size={34}
           style={styles.status}

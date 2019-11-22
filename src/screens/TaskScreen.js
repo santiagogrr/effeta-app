@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, Animated, Easing } from 'react-native';
 import {AsyncStorage} from 'react-native';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import LottieView from 'lottie-react-native';
+import Animation from 'lottie-react-native';
 import api from '../api/api.js';
 import RoundButton from "../components/RoundButton";
 import { ProgressSteps, ProgressStep } from 'react-native-progress-steps';
@@ -15,6 +15,8 @@ class TaskScreen extends Component {
       this.state = {
       isStart: false,
       isComplete: false,
+      speed: 1,
+      progress: new Animated.Value(0),
     }
   }
 
@@ -24,7 +26,7 @@ class TaskScreen extends Component {
     });
   }
 
-  async componentDidMount(){
+  componentDidMount(){
     const { navigation } = this.props
     this.willFocusListener = navigation.addListener(
       'willFocus',
@@ -32,7 +34,36 @@ class TaskScreen extends Component {
         this.getData()
       }
     )
+    // this.animation.play(30, 120);
+    // Animated.timing(this.state.progress, {
+    //   toValue: 1,
+    //   duration: 1000,
+    //   easing: Easing.linear,
+    // }).start();
+    // console.log(this.state.progress)
+    this.playLottie();
+    //this.animation.play();
   }
+
+  playLottie = () => {
+    Animated.timing(this.state.progress, {
+      toValue: 0.5,
+      // from: 0,
+      // to: 0.5,
+      duration: 5000,
+      easing: Easing.linear,
+    }).start();
+    //this.animation.play(30, 120);
+  }
+
+    playAnimation = () => {
+      this.setState({speed: 1})
+  }
+
+  pauseAnimation = () => {
+      this.setState({speed: 0})
+  }
+
 
   componentWillUnmount() {
     this.willFocusListener.remove()
@@ -78,9 +109,13 @@ class TaskScreen extends Component {
       try {
         const { userTask } = this.props.navigation.state.params
         const token = await AsyncStorage.getItem('userToken')
+        const currentDay = new Intl.DateTimeFormat('en-US',{
+          weekday: 'short'
+        }).format(new Date()).toLowerCase()
+        const completed = userTask.completed || ''
         await api.update('user-task',{
           id: userTask.id,
-          status: 'complete',
+          completed: completed + `${currentDay},`,
         },{
           headers: {
             Authorization: `Bearer ${token}`
@@ -95,7 +130,7 @@ class TaskScreen extends Component {
   }
 
   render() {
-    const { isStart, isComplete } = this.state;
+    const { isStart, isComplete, progress } = this.state;
 
     const progressStepsStyle = {
       activeStepIconBorderColor: 'darkcyan',
@@ -126,8 +161,9 @@ class TaskScreen extends Component {
           </View>
           <Text style={styles.header}>{task.name}</Text>
           <View style={styles.container}>
-            {isComplete ? (<LottieView 
+            {isComplete ? (<Animation 
               source={require('../../assets/party.json')} autoPlay loop={false}
+              //ref={(animation) => this.myAnimation = animation}
               style={{width:'100%', height:'100%', position: 'absolute'}}
               />) : null}
           {isStart ? 
@@ -143,8 +179,14 @@ class TaskScreen extends Component {
             >
               <View style={{ alignItems: 'center' }}>
                 <Text>Payment step content</Text>
-                <LottieView 
+                <Animation 
                 source={require('../../assets/data1.json')} autoPlay loop 
+                ref={animation => {
+                  this.animation = animation;
+                }}
+                progress={progress}
+                onAnimationFinish={this.pauseAnimation}
+                speed={this.state.speed} 
                 style={{width:120, height:220}}
                 />
               </View>

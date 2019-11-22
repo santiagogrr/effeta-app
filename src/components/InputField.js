@@ -59,7 +59,8 @@ class InputField extends Component {
             styles.inputField
           ]}
           secureTextEntry={secureInput}
-          value={inputValue}
+          value={defaultValue}
+          // defaultValue={defaultValue}
           onChangeText={onChangeText}
         />
       </View>
